@@ -265,7 +265,6 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 
 	prev = fq->q.fragments_tail;
 	err = inet_frag_queue_insert(&fq->q, skb, offset, end);
-<<<<<<< HEAD
 	if (err) {
 		if (err == IPFRAG_DUP) {
 			/* No error for duplicates, pretend they got queued. */
@@ -274,10 +273,6 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 		}
 		goto insert_error;
 	}
-=======
-	if (err)
-		goto insert_error;
->>>>>>> 74cec2565b14... net: IP6 defrag: use rbtrees in nf_conntrack_reasm.c
 
 	if (dev)
 		fq->iif = dev->ifindex;
@@ -304,26 +299,19 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
 		skb->_skb_refdst = 0UL;
 		err = nf_ct_frag6_reasm(fq, skb, prev, dev);
 		skb->_skb_refdst = orefdst;
-<<<<<<< HEAD
 
 		/* After queue has assumed skb ownership, only 0 or
 		 * -EINPROGRESS must be returned.
 		 */
 		return err ? -EINPROGRESS : 0;
-=======
-		return err;
->>>>>>> 74cec2565b14... net: IP6 defrag: use rbtrees in nf_conntrack_reasm.c
 	}
 
 	skb_dst_drop(skb);
 	return -EINPROGRESS;
 
 insert_error:
-<<<<<<< HEAD
-=======
 	if (err == IPFRAG_DUP)
 		goto err;
->>>>>>> 74cec2565b14... net: IP6 defrag: use rbtrees in nf_conntrack_reasm.c
 	inet_frag_kill(&fq->q);
 err:
 	skb_dst_drop(skb);
@@ -370,19 +358,11 @@ static int nf_ct_frag6_reasm(struct frag_queue *fq, struct sk_buff *skb,
 		(skb->data - skb->head) - sizeof(struct frag_hdr));
 	skb->mac_header += sizeof(struct frag_hdr);
 	skb->network_header += sizeof(struct frag_hdr);
-<<<<<<< HEAD
 
 	skb_reset_transport_header(skb);
 
 	inet_frag_reasm_finish(&fq->q, skb, reasm_data);
 
-=======
-
-	skb_reset_transport_header(skb);
-
-	inet_frag_reasm_finish(&fq->q, skb, reasm_data);
-
->>>>>>> 74cec2565b14... net: IP6 defrag: use rbtrees in nf_conntrack_reasm.c
 	skb->ignore_df = 1;
 	skb->dev = dev;
 	ipv6_hdr(skb)->payload_len = htons(payload_len);
@@ -510,15 +490,12 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
 		skb->transport_header = savethdr;
 		ret = 0;
 	}
-<<<<<<< HEAD
-=======
 
 	/* after queue has assumed skb ownership, only 0 or -EINPROGRESS
 	 * must be returned.
 	 */
 	if (ret)
 		ret = -EINPROGRESS;
->>>>>>> 74cec2565b14... net: IP6 defrag: use rbtrees in nf_conntrack_reasm.c
 
 	spin_unlock_bh(&fq->q.lock);
 	inet_frag_put(&fq->q);
