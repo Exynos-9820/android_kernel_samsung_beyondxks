@@ -133,6 +133,9 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
 		 * we do not free it here.
 		 */
 		*prob_offset = (u8 *)&fhdr->frag_off - skb_network_header(skb);
+		/* note that if prob_offset is set, the skb is freed elsewhere,
+		 * we do not free it here.
+		 */
 		return -1;
 	}
 
@@ -380,6 +383,7 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
 		if (prob_offset) {
 			__IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)),
 					IPSTATS_MIB_INHDRERRORS);
+			/* icmpv6_param_prob() calls kfree_skb(skb) */
 			icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, prob_offset);
 		}
 		return ret;
