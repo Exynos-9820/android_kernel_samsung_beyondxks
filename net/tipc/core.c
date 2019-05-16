@@ -132,13 +132,13 @@ static int __init tipc_init(void)
 	if (err)
 		goto out_pernet;
 
-	err = tipc_socket_init();
-	if (err)
-		goto out_socket;
-
 	err = register_pernet_device(&tipc_topsrv_net_ops);
 	if (err)
 		goto out_pernet_topsrv;
+
+	err = tipc_socket_init();
+	if (err)
+		goto out_socket;
 
 	err = tipc_bearer_setup();
 	if (err)
@@ -166,8 +166,8 @@ out_netlink:
 static void __exit tipc_exit(void)
 {
 	tipc_bearer_cleanup();
-	unregister_pernet_device(&tipc_topsrv_net_ops);
 	tipc_socket_stop();
+	unregister_pernet_device(&tipc_topsrv_net_ops);
 	unregister_pernet_device(&tipc_net_ops);
 	tipc_netlink_stop();
 	tipc_netlink_compat_stop();
