@@ -62,10 +62,6 @@ static int __net_init tipc_init_net(struct net *net)
 	INIT_LIST_HEAD(&tn->node_list);
 	spin_lock_init(&tn->node_list_lock);
 
-	err = tipc_socket_init();
-	if (err)
-		goto out_socket;
-
 	err = tipc_sk_rht_init(net);
 	if (err)
 		goto out_sk_rht;
@@ -87,8 +83,6 @@ out_bclink:
 out_nametbl:
 	tipc_sk_rht_destroy(net);
 out_sk_rht:
-	tipc_socket_stop();
-out_socket:
 	return err;
 }
 
@@ -98,7 +92,6 @@ static void __net_exit tipc_exit_net(struct net *net)
 	tipc_bcast_stop(net);
 	tipc_nametbl_stop(net);
 	tipc_sk_rht_destroy(net);
-	tipc_socket_stop();
 }
 
 static struct pernet_operations tipc_net_ops = {
@@ -139,10 +132,13 @@ static int __init tipc_init(void)
 	if (err)
 		goto out_pernet;
 
+<<<<<<< HEAD
 	err = register_pernet_device(&tipc_topsrv_net_ops);
 	if (err)
 		goto out_pernet_topsrv;
 
+=======
+>>>>>>> f61e651e39b3... Revert "tipc: fix modprobe tipc failed after switch order of device registration"
 	err = tipc_socket_init();
 	if (err)
 		goto out_socket;
