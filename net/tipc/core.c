@@ -132,13 +132,10 @@ static int __init tipc_init(void)
 	if (err)
 		goto out_pernet;
 
-<<<<<<< HEAD
 	err = register_pernet_device(&tipc_topsrv_net_ops);
 	if (err)
 		goto out_pernet_topsrv;
 
-=======
->>>>>>> f61e651e39b3... Revert "tipc: fix modprobe tipc failed after switch order of device registration"
 	err = tipc_socket_init();
 	if (err)
 		goto out_socket;
@@ -169,6 +166,7 @@ out_netlink:
 static void __exit tipc_exit(void)
 {
 	tipc_bearer_cleanup();
+	unregister_pernet_subsys(&tipc_topsrv_net_ops);
 	tipc_socket_stop();
 	unregister_pernet_device(&tipc_topsrv_net_ops);
 	unregister_pernet_device(&tipc_net_ops);
