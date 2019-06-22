@@ -387,14 +387,6 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,
 		goto dealloc_host;
 	}
 
-<<<<<<< HEAD
-	ufshcd_parse_pm_lvl_policy(hba);
-	ufshcd_parse_caps_info(hba);
-	pm_runtime_set_active(&pdev->dev);
-	pm_runtime_enable(&pdev->dev);
-
-=======
->>>>>>> 73e3c601e9dc... scsi: ufs: Avoid runtime suspend possibly being blocked forever
 	ufshcd_init_lanes_per_dir(hba);
 
 	err = ufshcd_init(hba, mmio_base, irq);
