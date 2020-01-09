@@ -1,34 +1,19 @@
 # SPDX-License-Identifier: GPL-2.0
-dts-dirs += actions
-dts-dirs += al
-dts-dirs += allwinner
-dts-dirs += altera
-dts-dirs += amd
-dts-dirs += amlogic
-dts-dirs += apm
-dts-dirs += arm
-dts-dirs += broadcom
-dts-dirs += cavium
-dts-dirs += exynos
-dts-dirs += freescale
-dts-dirs += hisilicon
-dts-dirs += marvell
-dts-dirs += mediatek
-dts-dirs += nvidia
-dts-dirs += qcom
-dts-dirs += realtek
-dts-dirs += renesas
-dts-dirs += rockchip
-dts-dirs += socionext
-dts-dirs += sprd
-dts-dirs += xilinx
-dts-dirs += lg
-dts-dirs += zte
+dtb-y += exynos/exynos9820.dtb
+dtbo-y += samsung/exynos9820-beyondx_kor_00.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_01.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_02.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_03.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_04.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_05.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_06.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_07.dtbo
+dtbo-y += samsung/exynos9820-beyondx_kor_08.dtbo
 
-subdir-y	:= $(dts-dirs)
+targets += dtbs
+DTB_LIST  := $(dtb-y) $(dtbo-y)
+always    := $(DTB_LIST)
 
-dtstree		:= $(srctree)/$(src)
+dtbs: $(addprefix $(obj)/, $(DTB_LIST))
 
-dtb-$(CONFIG_OF_ALL_DTBS) := $(patsubst $(dtstree)/%.dts,%.dtb, $(foreach d,$(dts-dirs), $(wildcard $(dtstree)/$(d)/*.dts)))
-
-always		:= $(dtb-y)
+clean-files := *.dtb*

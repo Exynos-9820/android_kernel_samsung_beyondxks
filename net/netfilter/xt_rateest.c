@@ -154,3 +154,45 @@ MODULE_ALIAS("ipt_rateest");
 MODULE_ALIAS("ip6t_rateest");
 module_init(xt_rateest_mt_init);
 module_exit(xt_rateest_mt_fini);
+tic void xt_rateest_tg_destroy(const struct xt_tgdtor_param *par)
+{
+	struct xt_rateest_target_info *info = par->targinfo;
+
+	xt_rateest_put(info->est);
+}
+
+static struct xt_target xt_rateest_tg_reg __read_mostly = {
+	.name       = "RATEEST",
+	.revision   = 0,
+	.family     = NFPROTO_UNSPEC,
+	.target     = xt_rateest_tg,
+	.checkentry = xt_rateest_tg_checkentry,
+	.destroy    = xt_rateest_tg_destroy,
+	.targetsize = sizeof(struct xt_rateest_target_info),
+	.usersize   = offsetof(struct xt_rateest_target_info, est),
+	.me         = THIS_MODULE,
+};
+
+static int __init xt_rateest_tg_init(void)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(rateest_hash); i++)
+		INIT_HLIST_HEAD(&rateest_hash[i]);
+
+	return xt_register_target(&xt_rateest_tg_reg);
+}
+
+static void __exit xt_rateest_tg_fini(void)
+{
+	xt_unregister_target(&xt_rateest_tg_reg);
+}
+
+
+MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Xtables: packet rate estimator");
+MODULE_ALIAS("ipt_RATEEST");
+MODULE_ALIAS("ip6t_RATEEST");
+module_init(xt_rateest_tg_init);
+module_exit(xt_rateest_tg_fini);

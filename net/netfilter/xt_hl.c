@@ -94,3 +94,69 @@ static void __exit hl_mt_exit(void)
 
 module_init(hl_mt_init);
 module_exit(hl_mt_exit);
+ *par)
+{
+	const struct ipt_TTL_info *info = par->targinfo;
+
+	if (info->mode > IPT_TTL_MAXMODE) {
+		pr_info("TTL: invalid or unknown mode %u\n", info->mode);
+		return -EINVAL;
+	}
+	if (info->mode != IPT_TTL_SET && info->ttl == 0)
+		return -EINVAL;
+	return 0;
+}
+
+static int hl_tg6_check(const struct xt_tgchk_param *par)
+{
+	const struct ip6t_HL_info *info = par->targinfo;
+
+	if (info->mode > IP6T_HL_MAXMODE) {
+		pr_info("invalid or unknown mode %u\n", info->mode);
+		return -EINVAL;
+	}
+	if (info->mode != IP6T_HL_SET && info->hop_limit == 0) {
+		pr_info("increment/decrement does not "
+			"make sense with value 0\n");
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static struct xt_target hl_tg_reg[] __read_mostly = {
+	{
+		.name       = "TTL",
+		.revision   = 0,
+		.family     = NFPROTO_IPV4,
+		.target     = ttl_tg,
+		.targetsize = sizeof(struct ipt_TTL_info),
+		.table      = "mangle",
+		.checkentry = ttl_tg_check,
+		.me         = THIS_MODULE,
+	},
+	{
+		.name       = "HL",
+		.revision   = 0,
+		.family     = NFPROTO_IPV6,
+		.target     = hl_tg6,
+		.targetsize = sizeof(struct ip6t_HL_info),
+		.table      = "mangle",
+		.checkentry = hl_tg6_check,
+		.me         = THIS_MODULE,
+	},
+};
+
+static int __init hl_tg_init(void)
+{
+	return xt_register_targets(hl_tg_reg, ARRAY_SIZE(hl_tg_reg));
+}
+
+static void __exit hl_tg_exit(void)
+{
+	xt_unregister_targets(hl_tg_reg, ARRAY_SIZE(hl_tg_reg));
+}
+
+module_init(hl_tg_init);
+module_exit(hl_tg_exit);
+MODULE_ALIAS("ipt_TTL");
+MODULE_ALIAS("ip6t_HL");
